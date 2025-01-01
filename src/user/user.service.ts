@@ -2,7 +2,6 @@ import { BadRequestException, Injectable, NotFoundException, UnauthorizedExcepti
 import { UserDto } from './dto/user.dto'
 import { PrismaService } from '../prisma/prisma.service'
 import { PasswordService } from '../password/password.service'
-import { AuthService } from '../auth/auth.service'
 import { TokensService } from '../tokens/tokens.service'
 
 @Injectable()
@@ -37,7 +36,8 @@ export class UserService {
 
         const payload = {
             email: user.email,
-            isAdmin: user.isAdmin
+            isAdmin: user.isAdmin,
+            confirmed: user.confirmed
         }
 
         return this.tokensService.generateTokens(payload)

@@ -33,7 +33,8 @@ export class AuthService {
 
         const payload = {
             email: login_data.email,
-            isAdmin: user.isAdmin
+            isAdmin: user.isAdmin,
+            confirmed: user.confirmed
         }
 
         return this.tokensService.generateTokens(payload)
