@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, UsePipes, Request, ValidationPipe, UnauthorizedException } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, UsePipes, Request, ValidationPipe, UnauthorizedException, HttpStatus, HttpCode, Patch } from '@nestjs/common'
 import { UserService } from './user.service'
 import { UserDto } from './dto/user.dto'
 import { JwtAuthGuard } from '../tokens/guards/jsw.guard'
@@ -39,5 +39,12 @@ export class UserController {
     @Post('confirm')
     async confirm(@Request() request: any) {
         return this.confirmService.send(request.user)
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Patch('confirm')
+    @HttpCode(HttpStatus.OK)
+    async checkConfirm(@Body() { hash, code }: { hash: string; code: number }) {
+        return this.confirmService.confirm(hash, code)
     }
 }

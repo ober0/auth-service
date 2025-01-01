@@ -17,7 +17,7 @@ export class RedisService {
         }
     }
 
-    async get(key: string): Promise<string | null> {
+    async get(key: string): Promise<string | number | null> {
         try {
             return await this.redisClient.get(key)
         } catch (error) {

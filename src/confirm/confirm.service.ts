@@ -3,6 +3,7 @@ import * as nodemailer from 'nodemailer'
 import { ConfigService } from '@nestjs/config'
 import { RedisService } from '../redis/redis.service'
 import { randomBytes, createHash } from 'crypto'
+import { PrismaService } from '../prisma/prisma.service'
 
 @Injectable()
 export class ConfirmService {
@@ -10,7 +11,8 @@ export class ConfirmService {
 
     constructor(
         private readonly configService: ConfigService,
-        private readonly redisService: RedisService
+        private readonly redisService: RedisService,
+        private readonly prisma: PrismaService
     ) {
         this.transporter = nodemailer.createTransport({
             service: 'yandex',
@@ -56,5 +58,28 @@ export class ConfirmService {
         } catch (error) {
             throw new UnauthorizedException('Не удалось отправить письмо')
         }
+    }
+
+    async confirm(hash: string, code: number) {
+        const email: string | number | null = await this.redisService.get(hash)
+        if (!email || typeof email != 'string') {
+            throw new UnauthorizedException('Код устарел или не существует')
+        }
+        const trueCode: string | number | null = await this.redisService.get(email)
+
+        if (trueCode != code) {
+            throw new UnauthorizedException('Неверный код')
+        }
+
+        await this.prisma.user.update({
+            where: {
+                email
+            },
+            data: {
+                confirmed: true
+            }
+        })
+
+        return true
     }
 }
