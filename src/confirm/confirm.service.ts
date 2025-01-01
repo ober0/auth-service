@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config'
 import { RedisService } from '../redis/redis.service'
 import { randomBytes, createHash } from 'crypto'
 import { PrismaService } from '../prisma/prisma.service'
+import { TokensService } from '../tokens/tokens.service'
 
 @Injectable()
 export class ConfirmService {
@@ -12,7 +13,8 @@ export class ConfirmService {
     constructor(
         private readonly configService: ConfigService,
         private readonly redisService: RedisService,
-        private readonly prisma: PrismaService
+        private readonly prisma: PrismaService,
+        private readonly tokenService: TokensService
     ) {
         this.transporter = nodemailer.createTransport({
             service: 'yandex',
@@ -71,7 +73,7 @@ export class ConfirmService {
             throw new UnauthorizedException('Неверный код')
         }
 
-        await this.prisma.user.update({
+        const user = await this.prisma.user.update({
             where: {
                 email
             },
@@ -79,7 +81,19 @@ export class ConfirmService {
                 confirmed: true
             }
         })
+        if (!user) {
+            throw new UnauthorizedException('Пользователя с таким email не существует')
+        }
 
-        return true
+        await this.redisService.delete(hash)
+        await this.redisService.delete(email)
+
+        const payload = {
+            email: email,
+            isAdmin: user.isAdmin,
+            confirmed: user.confirmed
+        }
+
+        return this.tokenService.generateTokens(payload)
     }
 }

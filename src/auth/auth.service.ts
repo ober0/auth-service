@@ -1,7 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { UserService } from '../user/user.service'
 import { PasswordService } from '../password/password.service'
-import { JwtService } from '@nestjs/jwt'
 import { LoginData } from './dto/auth.dto'
 import { TokensService } from '../tokens/tokens.service'
 
@@ -9,7 +8,6 @@ import { TokensService } from '../tokens/tokens.service'
 export class AuthService {
     constructor(
         private readonly userService: UserService,
-        private readonly jwtService: JwtService,
         private readonly passwordService: PasswordService,
         private readonly tokensService: TokensService
     ) {}
