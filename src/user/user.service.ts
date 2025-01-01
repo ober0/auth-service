@@ -2,12 +2,15 @@ import { BadRequestException, Injectable, NotFoundException, UnauthorizedExcepti
 import { UserDto } from './dto/user.dto'
 import { PrismaService } from '../prisma/prisma.service'
 import { PasswordService } from '../password/password.service'
+import { AuthService } from '../auth/auth.service'
+import { TokensService } from '../tokens/tokens.service'
 
 @Injectable()
 export class UserService {
     constructor(
         private readonly prisma: PrismaService,
-        private readonly passwordService: PasswordService
+        private readonly passwordService: PasswordService,
+        private readonly tokensService: TokensService
     ) {}
 
     async findUserByEmail(email: string) {
@@ -24,13 +27,20 @@ export class UserService {
 
         const passwordHash = await this.passwordService.hash(userdata.password)
 
-        return this.prisma.user.create({
+        const user = await this.prisma.user.create({
             data: {
                 email: userdata.email,
                 passwordHash,
                 name: userdata.name
             }
         })
+
+        const payload = {
+            email: user.email,
+            isAdmin: user.isAdmin
+        }
+
+        return this.tokensService.generateTokens(payload)
     }
 
     async getUser(id: string) {

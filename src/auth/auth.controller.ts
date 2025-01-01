@@ -1,10 +1,14 @@
 import { Body, Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { LoginData } from './dto/auth.dto'
+import { TokensService } from '../tokens/tokens.service'
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) {}
+    constructor(
+        private readonly authService: AuthService,
+        private readonly tokensService: TokensService
+    ) {}
 
     @Post()
     @UsePipes(new ValidationPipe())
@@ -14,6 +18,6 @@ export class AuthController {
 
     @Post('refresh')
     async refresh(@Body('refresh_token') refreshToken: string) {
-        return this.authService.refreshTokens(refreshToken)
+        return this.tokensService.refreshTokens(refreshToken)
     }
 }

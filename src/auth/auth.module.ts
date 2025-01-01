@@ -8,10 +8,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { UserService } from '../user/user.service'
 import { JwtStrategy } from './strategies/jwt.strategy'
 import { PrismaModule } from '../prisma/prisma.module'
+import { TokensService } from '../tokens/tokens.service'
+import { TokensModule } from '../tokens/tokens.module'
 
 @Module({
     controllers: [AuthController],
-    providers: [AuthService, PasswordService, JwtStrategy, UserService],
+    providers: [AuthService, PasswordService, JwtStrategy, UserService, TokensService],
+    exports: [AuthService],
     imports: [
         ConfigModule.forRoot({ isGlobal: true }),
         JwtModule.registerAsync({
@@ -25,7 +28,8 @@ import { PrismaModule } from '../prisma/prisma.module'
             })
         }),
         PassportModule,
-        PrismaModule
+        PrismaModule,
+        TokensModule
     ]
 })
 export class AuthModule {}
