@@ -6,7 +6,7 @@ export class TokensService {
     constructor(private readonly jwtService: JwtService) {}
 
     async generateTokens(payload: { email: string; isAdmin: boolean; confirmed: boolean }) {
-        const access_token = this.jwtService.sign(payload, { expiresIn: '1m' })
+        const access_token = this.jwtService.sign(payload, { expiresIn: '15m' })
         const refresh_token = this.jwtService.sign(payload, { expiresIn: '14d' })
 
         return { access_token, refresh_token }
