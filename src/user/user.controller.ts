@@ -1,6 +1,8 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, UsePipes, Request, ValidationPipe, UnauthorizedException } from '@nestjs/common'
 import { UserService } from './user.service'
 import { UserDto } from './dto/user.dto'
+import { JwtAuthGuard } from '../auth/guards/jsw.guard'
+import { AdminGuard } from '../auth/guards/admin.guard'
 
 @Controller('user')
 export class UserController {
@@ -18,11 +20,8 @@ export class UserController {
     }
 
     @Delete(':id')
+    @UseGuards(JwtAuthGuard, AdminGuard)
     async deleteUser(@Param('id') id: string) {
-        const user = await this.userService.getUser(id)
-        if (!user) {
-            throw new NotFoundException(`User with id ${id} not found`)
-        }
         return this.userService.deleteUser(id)
     }
 

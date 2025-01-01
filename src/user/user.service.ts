@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { UserDto } from './dto/user.dto'
 import { PrismaService } from '../prisma/prisma.service'
 import { PasswordService } from '../password/password.service'
@@ -42,6 +42,11 @@ export class UserService {
     }
 
     async deleteUser(id: string) {
+        const user = await this.getUser(id)
+        if (!user) {
+            throw new NotFoundException(`User with id ${id} not found`)
+        }
+
         return this.prisma.user.delete({
             where: {
                 id: +id
