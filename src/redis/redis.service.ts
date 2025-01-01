@@ -29,7 +29,6 @@ export class RedisService {
     async delete(key: string): Promise<void> {
         try {
             await this.redisClient.del(key)
-            console.log(`Удалено: ${key}`)
         } catch (error) {
             console.error('Ошибка при удалении из Redis:', error)
         }

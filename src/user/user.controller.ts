@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, Param, Post, UseGuards, UsePipes, Reques
 import { UserService } from './user.service'
 import { UserDto } from './dto/user.dto'
 import { JwtAuthGuard } from '../tokens/guards/jsw.guard'
-import { AdminGuard } from './guards/admin.guard'
 import { ConfirmGuard } from './guards/confirm.guard'
 import { ConfirmService } from '../confirm/confirm.service'
 
