@@ -26,6 +26,13 @@ export class AuthService {
         return user
     }
 
+    async generateTokens(payload: { email: string; isAdmin: boolean }) {
+        const access_token = this.jwtService.sign(payload, { expiresIn: '1m' })
+        const refresh_token = this.jwtService.sign(payload, { expiresIn: '14d' })
+
+        return { access_token, refresh_token }
+    }
+
     async login(login_data: LoginData) {
         const user = await this.validateUser(login_data)
 
@@ -34,10 +41,16 @@ export class AuthService {
             isAdmin: user.isAdmin
         }
 
-        const access_token = this.jwtService.sign(payload)
+        return this.generateTokens(payload)
+    }
 
-        return {
-            access_token
+    async refreshTokens(refreshToken: string) {
+        try {
+            const payload = this.jwtService.verify(refreshToken)
+            const newTokens = await this.generateTokens({ email: payload.email, isAdmin: payload.isAdmin })
+            return newTokens
+        } catch (error) {
+            throw new UnauthorizedException('Invalid refresh token')
         }
     }
 }
