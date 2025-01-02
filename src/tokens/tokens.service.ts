@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { GenTokenDto } from './dto/genToken.dto'
 import { errors } from '../../config/errors'
+import { config } from '../../config/consts'
 
 @Injectable()
 export class TokensService {
@@ -15,8 +16,8 @@ export class TokensService {
             confirmed: user.confirmed
         }
 
-        const access_token = this.jwtService.sign(payload, { expiresIn: '5m' })
-        const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' })
+        const access_token = this.jwtService.sign(payload, { expiresIn: config.jwt.access_tokenExpiresIn })
+        const refresh_token = this.jwtService.sign(payload, { expiresIn: config.jwt.refresh_tokenExpiresIn })
 
         return { access_token, refresh_token }
     }
