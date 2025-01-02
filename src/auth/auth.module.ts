@@ -10,10 +10,11 @@ import { JwtStrategy } from '../tokens/strategies/jwt.strategy'
 import { PrismaModule } from '../prisma/prisma.module'
 import { TokensService } from '../tokens/tokens.service'
 import { TokensModule } from '../tokens/tokens.module'
+import { RedisService } from '../redis/redis.service'
 
 @Module({
     controllers: [AuthController],
-    providers: [AuthService, PasswordService, JwtStrategy, UserService, TokensService],
+    providers: [AuthService, PasswordService, JwtStrategy, UserService, TokensService, RedisService],
     exports: [AuthService],
     imports: [
         ConfigModule.forRoot({ isGlobal: true }),

@@ -33,4 +33,19 @@ export class RedisService {
             console.error('Ошибка при удалении из Redis:', error)
         }
     }
+
+    async incrementWithTTL(key: string, incrementBy: number = 1, ttl?: number): Promise<number> {
+        try {
+            const newValue = await this.redisClient.incrby(key, incrementBy)
+
+            if (ttl) {
+                await this.redisClient.expire(key, ttl)
+            }
+
+            return newValue
+        } catch (error) {
+            console.error('Ошибка при увеличении значения с TTL в Redis:', error)
+            throw error
+        }
+    }
 }

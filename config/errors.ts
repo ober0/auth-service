@@ -10,7 +10,8 @@ export const errors = {
         invalid_refresh_token: 'Неверный токен обновления',
         not_authenticated: 'Пользователь не аутентифицирован',
         no_admin_permissions: 'У вас нет прав администратора',
-        access_denied: 'Доступ запрещён'
+        access_denied: 'Доступ запрещён',
+        many_attempts: 'Много попыток. Попробуйте позже'
     },
     confirm: {
         not_sent: 'Не удалось отправить письмо',
