@@ -89,6 +89,7 @@ export class ConfirmService {
         await this.redisService.delete(email)
 
         const payload = {
+            id: user.id,
             email: email,
             isAdmin: user.isAdmin,
             confirmed: user.confirmed

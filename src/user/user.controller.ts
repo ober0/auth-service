@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, UsePipes, Request, ValidationPipe, UnauthorizedException, HttpStatus, HttpCode, Patch } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, UsePipes, Request, ValidationPipe, HttpStatus, HttpCode, Patch, ForbiddenException } from '@nestjs/common'
 import { UserService } from './user.service'
 import { UserDto } from './dto/user.dto'
 import { JwtAuthGuard } from '../tokens/guards/jsw.guard'
 import { ConfirmGuard } from './guards/confirm.guard'
 import { ConfirmService } from '../confirm/confirm.service'
+import { AdminOrSelfGuard } from './guards/adminOrSelf.guard'
 
 @Controller('user')
 export class UserController {
@@ -25,7 +26,7 @@ export class UserController {
 
     @Delete(':id')
     // @UseGuards(JwtAuthGuard, AdminGuard, ConfirmGuard)
-    @UseGuards(JwtAuthGuard, ConfirmGuard)
+    @UseGuards(JwtAuthGuard, ConfirmGuard, AdminOrSelfGuard)
     async deleteUser(@Param('id') id: string) {
         return this.userService.deleteUser(id)
     }

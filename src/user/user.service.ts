@@ -35,6 +35,7 @@ export class UserService {
         })
 
         const payload = {
+            id: user.id,
             email: user.email,
             isAdmin: user.isAdmin,
             confirmed: user.confirmed
