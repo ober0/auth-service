@@ -6,9 +6,10 @@ import { AuthModule } from '../auth/auth.module'
 import { UserModule } from '../user/user.module'
 import { PasswordModule } from '../password/password.module'
 import { TokensModule } from '../tokens/tokens.module'
+import { AdminModule } from '../admin/admin.module'
 
 @Module({
-    imports: [AuthModule, PrismaModule, UserModule, PasswordModule, TokensModule],
+    imports: [AuthModule, PrismaModule, UserModule, PasswordModule, TokensModule, AdminModule],
     controllers: [AppController],
     providers: [AppService]
 })
