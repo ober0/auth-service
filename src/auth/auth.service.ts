@@ -3,6 +3,7 @@ import { UserService } from '../user/user.service'
 import { PasswordService } from '../password/password.service'
 import { LoginData } from './dto/auth.dto'
 import { TokensService } from '../tokens/tokens.service'
+import { errors } from '../../config/errors'
 
 @Injectable()
 export class AuthService {
@@ -15,12 +16,12 @@ export class AuthService {
     async validateUser(loginData: LoginData) {
         const user = await this.userService.findUserByEmail(loginData.email)
         if (!user) {
-            throw new UnauthorizedException('User does not exist')
+            throw new UnauthorizedException(errors.user.not_found)
         }
 
         const isCorrectPassword = await this.passwordService.compare(loginData.password, user.passwordHash)
         if (!isCorrectPassword) {
-            throw new UnauthorizedException('Wrong Password or Email')
+            throw new UnauthorizedException(errors.user.wrong_credentials)
         }
 
         return user

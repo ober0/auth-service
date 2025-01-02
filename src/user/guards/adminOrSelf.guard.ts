@@ -1,4 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common'
+import { errors } from '../../../config/errors'
 
 @Injectable()
 export class AdminOrSelfGuard implements CanActivate {
@@ -8,13 +9,13 @@ export class AdminOrSelfGuard implements CanActivate {
         const id = Number(request.params.id)
 
         if (!user) {
-            throw new UnauthorizedException('User not authenticated')
+            throw new UnauthorizedException(errors.auth.not_authenticated)
         }
 
         if (user.id === id || user.isAdmin) {
             return true
         }
 
-        throw new ForbiddenException('Access denied')
+        throw new ForbiddenException(errors.auth.access_denied)
     }
 }

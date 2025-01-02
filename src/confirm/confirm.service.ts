@@ -5,6 +5,7 @@ import { RedisService } from '../redis/redis.service'
 import { randomBytes, createHash } from 'crypto'
 import { PrismaService } from '../prisma/prisma.service'
 import { TokensService } from '../tokens/tokens.service'
+import { errors } from '../../config/errors'
 
 @Injectable()
 export class ConfirmService {
@@ -33,7 +34,7 @@ export class ConfirmService {
 
     async send(user: any) {
         if (user.confirmed) {
-            throw new UnauthorizedException('You do have confirmed')
+            throw new UnauthorizedException(errors.user.not_confirmed)
         }
         const email = user.email
 
@@ -58,19 +59,19 @@ export class ConfirmService {
                 hash
             }
         } catch (error) {
-            throw new UnauthorizedException('Не удалось отправить письмо')
+            throw new UnauthorizedException(errors.confirm.not_sent)
         }
     }
 
     async confirm(hash: string, code: number) {
         const email: string | number | null = await this.redisService.get(hash)
         if (!email || typeof email != 'string') {
-            throw new UnauthorizedException('Код устарел или не существует')
+            throw new UnauthorizedException(errors.confirm.code_expired_or_invalid)
         }
         const trueCode: string | number | null = await this.redisService.get(email)
 
         if (trueCode != code) {
-            throw new UnauthorizedException('Неверный код')
+            throw new UnauthorizedException(errors.confirm.invalid_code)
         }
 
         const user = await this.prisma.user.update({
@@ -82,7 +83,7 @@ export class ConfirmService {
             }
         })
         if (!user) {
-            throw new UnauthorizedException('Пользователя с таким email не существует')
+            throw new UnauthorizedException(errors.user.not_found)
         }
 
         await this.redisService.delete(hash)

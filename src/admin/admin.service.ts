@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
 import { UserService } from '../user/user.service'
 import { TokensService } from '../tokens/tokens.service'
+import { errors } from '../../config/errors'
 
 @Injectable()
 export class AdminService {
@@ -14,7 +15,7 @@ export class AdminService {
     async makeAdmin(id: number) {
         const user = await this.userService.getUser(String(id))
         if (!user) {
-            throw new BadRequestException('user is invalid')
+            throw new BadRequestException(errors.user.not_found)
         }
 
         return this.prisma.user.update({
@@ -30,7 +31,7 @@ export class AdminService {
     async removeAdmin(id: number) {
         const user = await this.userService.getUser(String(id))
         if (!user) {
-            throw new BadRequestException('user is invalid')
+            throw new BadRequestException(errors.user.not_found)
         }
 
         return this.prisma.user.update({

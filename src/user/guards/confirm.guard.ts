@@ -1,4 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common'
+import { errors } from '../../../config/errors'
 
 @Injectable()
 export class ConfirmGuard implements CanActivate {
@@ -7,11 +8,11 @@ export class ConfirmGuard implements CanActivate {
         const user = request.user
 
         if (!user) {
-            throw new UnauthorizedException('User not authenticated')
+            throw new UnauthorizedException(errors.auth.not_authenticated)
         }
 
         if (!user.confirmed) {
-            throw new UnauthorizedException('You do not have confirmed account')
+            throw new UnauthorizedException(errors.user.not_confirmed)
         }
 
         return true

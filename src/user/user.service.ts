@@ -3,6 +3,7 @@ import { UserDto } from './dto/user.dto'
 import { PrismaService } from '../prisma/prisma.service'
 import { PasswordService } from '../password/password.service'
 import { TokensService } from '../tokens/tokens.service'
+import { errors } from '../../config/errors'
 
 @Injectable()
 export class UserService {
@@ -21,7 +22,7 @@ export class UserService {
     async addUser(userdata: UserDto) {
         const oldUser = await this.findUserByEmail(userdata.email)
         if (oldUser) {
-            throw new BadRequestException('User already exists')
+            throw new BadRequestException(errors.user.already_exists)
         }
 
         const passwordHash = await this.passwordService.hash(userdata.password)
@@ -48,7 +49,7 @@ export class UserService {
     async deleteUser(id: string) {
         const user = await this.getUser(id)
         if (!user) {
-            throw new NotFoundException(`User with id ${id} not found`)
+            throw new NotFoundException(errors.user.not_found)
         }
 
         return this.prisma.user.delete({

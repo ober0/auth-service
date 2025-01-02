@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { GenTokenDto } from './dto/genToken.dto'
+import { errors } from '../../config/errors'
 
 @Injectable()
 export class TokensService {
@@ -26,7 +27,7 @@ export class TokensService {
             const newTokens = await this.generateTokens({ id: payload.id, email: payload.email, isAdmin: payload.isAdmin, confirmed: payload.confirmed })
             return newTokens
         } catch (error) {
-            throw new UnauthorizedException('Invalid refresh token')
+            throw new UnauthorizedException(errors.auth.invalid_refresh_token)
         }
     }
 }
