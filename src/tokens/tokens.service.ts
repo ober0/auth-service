@@ -11,7 +11,7 @@ export class TokensService {
         const payload: GenTokenDto = {
             id: user.id,
             email: user.email,
-            isAdmin: user.isAdmin,
+            status: user.status,
             confirmed: user.confirmed
         }
 
@@ -24,7 +24,7 @@ export class TokensService {
     async refreshTokens(refreshToken: string) {
         try {
             const payload = this.jwtService.verify(refreshToken)
-            const newTokens = await this.generateTokens({ id: payload.id, email: payload.email, isAdmin: payload.isAdmin, confirmed: payload.confirmed })
+            const newTokens = await this.generateTokens({ id: payload.id, email: payload.email, status: payload.status, confirmed: payload.confirmed })
             return newTokens
         } catch (error) {
             throw new UnauthorizedException(errors.auth.invalid_refresh_token)

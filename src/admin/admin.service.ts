@@ -12,7 +12,7 @@ export class AdminService {
         private readonly tokenService: TokensService
     ) {}
 
-    async makeAdmin(id: number) {
+    async makeModerator(id: number) {
         const user = await this.userService.getUser(String(id))
         if (!user) {
             throw new BadRequestException(errors.user.not_found)
@@ -23,7 +23,39 @@ export class AdminService {
                 id: id
             },
             data: {
-                isAdmin: true
+                status: 2
+            }
+        })
+    }
+
+    async removeModerator(id: number) {
+        const user = await this.userService.getUser(String(id))
+        if (!user) {
+            throw new BadRequestException(errors.user.not_found)
+        }
+
+        return this.prisma.user.update({
+            where: {
+                id
+            },
+            data: {
+                status: 1
+            }
+        })
+    }
+
+    async makeAdmin(id: number) {
+        const user = await this.userService.getUser(String(id))
+        if (!user) {
+            throw new BadRequestException(errors.user.not_found)
+        }
+
+        return this.prisma.user.update({
+            where: {
+                id
+            },
+            data: {
+                status: 3
             }
         })
     }
@@ -39,7 +71,7 @@ export class AdminService {
                 id
             },
             data: {
-                isAdmin: false
+                status: 1
             }
         })
     }

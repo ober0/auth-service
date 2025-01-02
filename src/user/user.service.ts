@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service'
 import { PasswordService } from '../password/password.service'
 import { TokensService } from '../tokens/tokens.service'
 import { errors } from '../../config/errors'
+import { GenTokenDto } from '../tokens/dto/genToken.dto'
 
 @Injectable()
 export class UserService {
@@ -39,19 +40,25 @@ export class UserService {
     }
 
     async getUser(id: string) {
-        return this.prisma.user.findFirst({
+        const user = await this.prisma.user.findFirst({
             where: {
                 id: +id
             }
         })
+        if (!user) {
+            throw new NotFoundException(errors.user.not_found)
+        }
+        return user
     }
 
-    async deleteUser(id: string) {
+    async deleteUser(id: string, userJWT: GenTokenDto) {
         const user = await this.getUser(id)
         if (!user) {
             throw new NotFoundException(errors.user.not_found)
         }
-
+        if (userJWT.status <= user.status) {
+            throw new UnauthorizedException(errors.auth.access_denied)
+        }
         return this.prisma.user.delete({
             where: {
                 id: +id

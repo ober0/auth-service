@@ -4,7 +4,7 @@ import { UserDto } from './dto/user.dto'
 import { JwtAuthGuard } from '../tokens/guards/jsw.guard'
 import { ConfirmGuard } from './guards/confirm.guard'
 import { ConfirmService } from '../confirm/confirm.service'
-import { AdminOrSelfGuard } from './guards/adminOrSelf.guard'
+import { ModeratorOrSelfGuard } from './guards/moderatorOrSelf.guard'
 
 @Controller('user')
 export class UserController {
@@ -25,9 +25,9 @@ export class UserController {
     }
 
     @Delete(':id')
-    @UseGuards(JwtAuthGuard, ConfirmGuard, AdminOrSelfGuard)
-    async deleteUser(@Param('id') id: string) {
-        return this.userService.deleteUser(id)
+    @UseGuards(JwtAuthGuard, ModeratorOrSelfGuard)
+    async deleteUser(@Param('id') id: string, @Request() request: any) {
+        return this.userService.deleteUser(id, request.user)
     }
 
     @Get()
