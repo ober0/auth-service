@@ -1,12 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
 import { UserService } from '../user/user.service'
+import { TokensService } from '../tokens/tokens.service'
 
 @Injectable()
 export class AdminService {
     constructor(
         private readonly prisma: PrismaService,
-        private readonly userService: UserService
+        private readonly userService: UserService,
+        private readonly tokenService: TokensService
     ) {}
 
     async makeAdmin(id: number) {
@@ -21,6 +23,22 @@ export class AdminService {
             },
             data: {
                 isAdmin: true
+            }
+        })
+    }
+
+    async removeAdmin(id: number) {
+        const user = await this.userService.getUser(String(id))
+        if (!user) {
+            throw new BadRequestException('user is invalid')
+        }
+
+        return this.prisma.user.update({
+            where: {
+                id
+            },
+            data: {
+                isAdmin: false
             }
         })
     }

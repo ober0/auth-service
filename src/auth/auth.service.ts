@@ -28,14 +28,6 @@ export class AuthService {
 
     async login(login_data: LoginData) {
         const user = await this.validateUser(login_data)
-
-        const payload = {
-            id: user.id,
-            email: login_data.email,
-            isAdmin: user.isAdmin,
-            confirmed: user.confirmed
-        }
-
-        return this.tokensService.generateTokens(payload)
+        return this.tokensService.generateTokens(user)
     }
 }

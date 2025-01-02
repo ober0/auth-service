@@ -1,13 +1,21 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
+import { GenTokenDto } from './dto/genToken.dto'
 
 @Injectable()
 export class TokensService {
     constructor(private readonly jwtService: JwtService) {}
 
-    async generateTokens(payload: { id: number; email: string; isAdmin: boolean; confirmed: boolean }) {
-        const access_token = this.jwtService.sign(payload, { expiresIn: '15m' })
-        const refresh_token = this.jwtService.sign(payload, { expiresIn: '14d' })
+    async generateTokens(user: any) {
+        const payload: GenTokenDto = {
+            id: user.id,
+            email: user.email,
+            isAdmin: user.isAdmin,
+            confirmed: user.confirmed
+        }
+
+        const access_token = this.jwtService.sign(payload, { expiresIn: '5m' })
+        const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' })
 
         return { access_token, refresh_token }
     }

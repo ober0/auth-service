@@ -34,14 +34,7 @@ export class UserService {
             }
         })
 
-        const payload = {
-            id: user.id,
-            email: user.email,
-            isAdmin: user.isAdmin,
-            confirmed: user.confirmed
-        }
-
-        return this.tokensService.generateTokens(payload)
+        return this.tokensService.generateTokens(user)
     }
 
     async getUser(id: string) {
