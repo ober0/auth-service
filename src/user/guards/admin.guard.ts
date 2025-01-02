@@ -11,7 +11,7 @@ export class AdminGuard implements CanActivate {
             throw new UnauthorizedException(errors.auth.not_authenticated)
         }
 
-        if (!user.isAdmin) {
+        if (user.status < 3) {
             throw new UnauthorizedException(errors.auth.no_admin_permissions)
         }
 

@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException, Forbi
 import { errors } from '../../../config/errors'
 
 @Injectable()
-export class AdminOrSelfGuard implements CanActivate {
+export class ModeratorOrSelfGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean {
         const request = context.switchToHttp().getRequest()
         const user = request.user
@@ -12,7 +12,7 @@ export class AdminOrSelfGuard implements CanActivate {
             throw new UnauthorizedException(errors.auth.not_authenticated)
         }
 
-        if (user.id === id || user.isAdmin) {
+        if (user.id === id || user.status > 1) {
             return true
         }
 
