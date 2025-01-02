@@ -3,10 +3,11 @@ import { TokensService } from './tokens.service'
 import { JwtStrategy } from './strategies/jwt.strategy'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
+import { RedisService } from '../redis/redis.service'
 
 @Module({
     exports: [TokensService, JwtModule],
-    providers: [TokensService, ConfigService, JwtStrategy],
+    providers: [TokensService, ConfigService, JwtStrategy, RedisService],
     imports: [
         ConfigModule.forRoot({ isGlobal: true }),
         JwtModule.registerAsync({

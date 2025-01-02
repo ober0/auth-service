@@ -20,5 +20,8 @@ export const errors = {
     },
     general: {
         internal_error: 'Внутренняя ошибка сервера'
+    },
+    jwt: {
+        revoked: 'Токен недействителен. Авторизируйтесь заново'
     }
 }
