@@ -18,7 +18,7 @@ export class AdminSessionsController {
         }
     }
 
-    @Get('get/:id')
+    @Get(':id')
     @UseGuards(JwtAuthGuard, ModeratorGuard)
     async getSessions(@Param('id') id: string) {
         return this.adminSessionService.getSessions(id)

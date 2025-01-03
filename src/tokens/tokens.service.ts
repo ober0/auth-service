@@ -43,12 +43,15 @@ export class TokensService {
             const payload = this.jwtService.verify(refreshToken)
 
             const key: string = `user:${payload.id}:refresh_token:${payload.jti}:*`
-            const status_key = await this.redis.getKeys(key)
-            if (status_key[0] != 'active') {
+            const status_keys = await this.redis.getKeys(key)
+
+            const status = await this.redis.get(status_keys[0])
+
+            if (status != 'active') {
                 throw new UnauthorizedException(errors.jwt.revoked)
             }
 
-            await this.redis.delete(key)
+            await this.redis.delete(status_keys[0])
 
             const newTokens = await this.generateTokens({ id: payload.id, email: payload.email, status: payload.status, confirmed: payload.confirmed, jti: payload.jti, ip: payload.ip })
             return newTokens
