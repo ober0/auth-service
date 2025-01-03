@@ -23,4 +23,10 @@ export class AdminSessionsController {
     async getSessions(@Param('id') id: string) {
         return this.adminSessionService.getSessions(id)
     }
+
+    @Post('logout/:id')
+    @UseGuards(JwtAuthGuard, ModeratorGuard)
+    async logoutByUserId(@Param('id') id: string) {
+        return this.adminSessionService.logoutByUserId(id)
+    }
 }

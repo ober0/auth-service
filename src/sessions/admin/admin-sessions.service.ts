@@ -53,4 +53,27 @@ export class AdminSessionsService {
 
         return sessions
     }
+
+    async logoutByUserId(id: string) {
+        const accessKey: string = `user:${id}:access_token:*:*`
+        const refreshKey: string = `user:${id}:refresh_token:*:*`
+
+        const accessKeysRedis: string[] = await this.redis.getKeys(accessKey)
+        const refreshKeysRedis: string[] = await this.redis.getKeys(refreshKey)
+
+        let closedSessions: number = 0
+
+        for (const key of accessKeysRedis) {
+            await this.redis.delete(key)
+        }
+        for (const key of refreshKeysRedis) {
+            await this.redis.delete(key)
+            closedSessions++
+        }
+
+        return {
+            success: true,
+            closed: closedSessions
+        }
+    }
 }

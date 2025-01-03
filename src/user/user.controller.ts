@@ -16,7 +16,7 @@ export class UserController {
     @UsePipes(new ValidationPipe())
     @Post('add')
     async addUser(@Body() userdata: UserDto, @Request() request: any) {
-        return this.userService.addUser(userdata, request.id)
+        return this.userService.addUser(userdata, request.ip)
     }
 
     @Get(':id')

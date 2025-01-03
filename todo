@@ -1,10 +1,5 @@
-- список сессий для User
-- список сессий по пользователям для Admin
 - выход из текущей, конкретной, или всех сессий.
     - user:
-        - если из текущй body = { current: true }
-        - если из конкретной body = { session_id: id }
-        - если из всех body = { all = true }
+        - если из конкретной body = { user: auto, session_id: id }
     - admin:
         - если из конкретной body = { user:  id, session_id: id }
-                - если из всех body = { user:  id, all = true }
