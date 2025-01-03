@@ -55,17 +55,4 @@ export class TokensService {
             throw new UnauthorizedException(errors.auth.invalid_refresh_token)
         }
     }
-
-    async logoutAll() {
-        const keys = await this.redis.getKeys(`user:*:access_token:*`)
-        const refreshKeys = await this.redis.getKeys(`user:*:refresh_token:*`)
-
-        for (const key of keys) {
-            await this.redis.delete(key)
-        }
-
-        for (const key of refreshKeys) {
-            await this.redis.delete(key)
-        }
-    }
 }
