@@ -22,14 +22,15 @@ export class TokensService {
             email: user.email,
             status: user.status,
             confirmed: user.confirmed,
-            jti: this.generateUniqueTokenId(user.id)
+            jti: this.generateUniqueTokenId(user.id),
+            ip: user.ip
         }
 
         const access_token = this.jwtService.sign(payload, { expiresIn: `${config.jwt.access_tokenExpiresIn}s` })
         const refresh_token = this.jwtService.sign(payload, { expiresIn: `${config.jwt.refresh_tokenExpiresIn}s` })
 
-        const access_key = `user:${user.id}:access_token:${payload.jti}`
-        const refresh_key = `user:${user.id}:refresh_token:${payload.jti}`
+        const access_key = `user:${user.id}:access_token:${payload.jti}:${access_token}`
+        const refresh_key = `user:${user.id}:refresh_token:${payload.jti}:${refresh_token}`
 
         await this.redis.set(access_key, 'active', Number(config.jwt.access_tokenExpiresIn))
         await this.redis.set(refresh_key, 'active', Number(config.jwt.refresh_tokenExpiresIn))
@@ -41,15 +42,15 @@ export class TokensService {
         try {
             const payload = this.jwtService.verify(refreshToken)
 
-            const key: string = `user:${payload.id}:refresh_token:${payload.jti}`
-            const status_key = await this.redis.get(key)
-            if (status_key != 'active') {
+            const key: string = `user:${payload.id}:refresh_token:${payload.jti}:*`
+            const status_key = await this.redis.getKeys(key)
+            if (status_key[0] != 'active') {
                 throw new UnauthorizedException(errors.jwt.revoked)
             }
 
             await this.redis.delete(key)
 
-            const newTokens = await this.generateTokens({ id: payload.id, email: payload.email, status: payload.status, confirmed: payload.confirmed, jti: payload.jti })
+            const newTokens = await this.generateTokens({ id: payload.id, email: payload.email, status: payload.status, confirmed: payload.confirmed, jti: payload.jti, ip: payload.ip })
             return newTokens
         } catch (error) {
             throw new UnauthorizedException(errors.auth.invalid_refresh_token)

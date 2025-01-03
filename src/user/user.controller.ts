@@ -15,8 +15,8 @@ export class UserController {
 
     @UsePipes(new ValidationPipe())
     @Post('add')
-    async addUser(@Body() userdata: UserDto) {
-        return this.userService.addUser(userdata)
+    async addUser(@Body() userdata: UserDto, @Request() request: any) {
+        return this.userService.addUser(userdata, request.id)
     }
 
     @Get(':id')
@@ -44,7 +44,7 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     @Patch('confirm')
     @HttpCode(HttpStatus.OK)
-    async checkConfirm(@Body() { hash, code }: { hash: string; code: number }) {
-        return this.confirmService.confirm(hash, code)
+    async checkConfirm(@Body() { hash, code }: { hash: string; code: number }, @Request() request: any) {
+        return this.confirmService.confirm(hash, code, request.ip)
     }
 }

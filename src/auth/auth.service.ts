@@ -40,6 +40,6 @@ export class AuthService {
         }
 
         const user = await this.validateUser(login_data, ip)
-        return this.tokensService.generateTokens(user)
+        return this.tokensService.generateTokens({ ...user, ip })
     }
 }

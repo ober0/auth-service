@@ -1,7 +1,8 @@
-import { Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common'
+import { Controller, Get, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../../tokens/guards/jsw.guard'
 import { AdminGuard } from '../../user/guards/admin.guard'
 import { AdminSessionsService } from './admin-sessions.service'
+import { ModeratorGuard } from '../../user/guards/moderator.guard'
 
 @Controller('sessions/admin')
 export class AdminSessionsController {
@@ -15,5 +16,11 @@ export class AdminSessionsController {
         return {
             success: true
         }
+    }
+
+    @Get('get/:id')
+    @UseGuards(JwtAuthGuard, ModeratorGuard)
+    async getSessions(@Param('id') id: string) {
+        return this.adminSessionService.getSessions(id)
     }
 }

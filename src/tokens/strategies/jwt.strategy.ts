@@ -19,11 +19,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: any) {
-        const access_key = `user:${payload.id}:access_token:${payload.jti}`
+        const access_key = `user:${payload.id}:access_token:${payload.jti}:*`
 
-        const accessTokenStatus = await this.redis.get(access_key)
+        const accessTokenStatus = await this.redis.getKeys(access_key)
 
-        if (accessTokenStatus === 'revoked' || accessTokenStatus === null) {
+        if (accessTokenStatus[0] === 'revoked' || accessTokenStatus === null) {
             throw new UnauthorizedException(errors.jwt.revoked)
         }
 
