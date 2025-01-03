@@ -3,4 +3,5 @@ export class GenTokenDto {
     email: string
     status: number
     confirmed: boolean
+    jti: string
 }

@@ -48,4 +48,22 @@ export class RedisService {
             throw error
         }
     }
+
+    async getKeys(pattern: string): Promise<string[]> {
+        try {
+            let cursor = '0'
+            const keys: string[] = []
+
+            do {
+                const result = await this.redisClient.scan(cursor, 'MATCH', pattern)
+                cursor = result[0]
+                keys.push(...result[1])
+            } while (cursor !== '0')
+
+            return keys
+        } catch (error) {
+            console.error('Ошибка при получении ключей из Redis:', error)
+            return []
+        }
+    }
 }
