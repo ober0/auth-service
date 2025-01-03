@@ -9,7 +9,7 @@ import { TokensModule } from '../tokens/tokens.module'
 import { AdminModule } from '../admin/admin.module'
 
 @Module({
-    imports: [AuthModule, PrismaModule, UserModule, PasswordModule, TokensModule, AdminModule],
+    imports: [AuthModule, PrismaModule, UserModule, PasswordModule, TokensModule, AdminModule, SessionsModule],
     controllers: [AppController],
     providers: [AppService]
 })
