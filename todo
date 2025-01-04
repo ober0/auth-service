@@ -1,5 +1,0 @@
-- выход из текущей, конкретной, или всех сессий.
-    - user:
-        - если из конкретной body = { user: auto, session_id: id }
-    - admin:
-        - если из конкретной body = { user:  id, session_id: id }

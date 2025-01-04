@@ -23,5 +23,8 @@ export const errors = {
     },
     jwt: {
         revoked: 'Токен недействителен. Авторизируйтесь заново'
+    },
+    sessions: {
+        not_found: 'Сессия не найдена'
     }
 }

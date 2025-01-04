@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { RedisService } from '../../redis/redis.service'
 import { SessionDto, SessionsDto } from '../dto/sessions.dto'
 import { JwtService } from '@nestjs/jwt'
+import { errors } from '../../../config/errors'
 
 @Injectable()
 export class AdminSessionsService {
@@ -74,6 +75,30 @@ export class AdminSessionsService {
         return {
             success: true,
             closed: closedSessions
+        }
+    }
+
+    async logoutBySessionId(user_id: string, session_id: string) {
+        console.log(user_id, session_id)
+        const accessKey: string = `user:${user_id}:access_token:${session_id}:*`
+        const refreshKey: string = `user:${user_id}:refresh_token:${session_id}:*`
+
+        const accessKeysRedis: string[] = await this.redis.getKeys(accessKey)
+        const refreshKeysRedis: string[] = await this.redis.getKeys(refreshKey)
+
+        if (refreshKeysRedis.length == 0 && accessKeysRedis.length == 0) {
+            throw new BadRequestException(errors.sessions.not_found)
+        }
+
+        for (const key of accessKeysRedis) {
+            await this.redis.delete(key)
+        }
+        for (const key of refreshKeysRedis) {
+            await this.redis.delete(key)
+        }
+
+        return {
+            success: true
         }
     }
 }

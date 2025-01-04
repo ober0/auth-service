@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Request, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post, Request, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../../tokens/guards/jsw.guard'
 import { AdminSessionsService } from '../admin/admin-sessions.service'
 import { UserSessionsService } from './user-sessions.service'
@@ -23,5 +23,12 @@ export class UserSessionsController {
     async logoutByUserId(@Request() request: any) {
         const id = request.user.id
         return this.adminSessionService.logoutByUserId(id)
+    }
+
+    @Post('logout/session/')
+    @UseGuards(JwtAuthGuard)
+    async logoutBySessionId(@Body('session_id') session_id: string, @Request() request: any) {
+        const user_id: string = request.user.id
+        return this.adminSessionService.logoutBySessionId(user_id, session_id)
     }
 }
