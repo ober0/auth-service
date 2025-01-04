@@ -20,7 +20,7 @@ export class UserService {
         })
     }
 
-    async addUser(userdata: UserDto) {
+    async addUser(userdata: UserDto, ip: string) {
         const oldUser = await this.findUserByEmail(userdata.email)
         if (oldUser) {
             throw new BadRequestException(errors.user.already_exists)
@@ -36,7 +36,7 @@ export class UserService {
             }
         })
 
-        return this.tokensService.generateTokens(user)
+        return this.tokensService.generateTokens({ ...user, ip })
     }
 
     async getUser(id: string) {

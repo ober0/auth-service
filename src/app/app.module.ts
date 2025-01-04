@@ -7,9 +7,10 @@ import { UserModule } from '../user/user.module'
 import { PasswordModule } from '../password/password.module'
 import { TokensModule } from '../tokens/tokens.module'
 import { AdminModule } from '../admin/admin.module'
+import { SessionsModule } from '../sessions/sessions.module'
 
 @Module({
-    imports: [AuthModule, PrismaModule, UserModule, PasswordModule, TokensModule, AdminModule],
+    imports: [AuthModule, PrismaModule, UserModule, PasswordModule, TokensModule, AdminModule, SessionsModule],
     controllers: [AppController],
     providers: [AppService]
 })

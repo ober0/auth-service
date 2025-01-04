@@ -4,4 +4,5 @@ export class GenTokenDto {
     status: number
     confirmed: boolean
     jti: string
+    ip: string
 }

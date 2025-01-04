@@ -63,7 +63,7 @@ export class ConfirmService {
         }
     }
 
-    async confirm(hash: string, code: number) {
+    async confirm(hash: string, code: number, ip: string) {
         const email: string | number | null = await this.redisService.get(hash)
         if (!email || typeof email != 'string') {
             throw new UnauthorizedException(errors.confirm.code_expired_or_invalid)
@@ -89,6 +89,6 @@ export class ConfirmService {
         await this.redisService.delete(hash)
         await this.redisService.delete(email)
 
-        return this.tokenService.generateTokens(user)
+        return this.tokenService.generateTokens({ ...user, ip })
     }
 }

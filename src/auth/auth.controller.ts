@@ -22,14 +22,4 @@ export class AuthController {
     async refresh(@Body('refresh_token') refreshToken: string) {
         return this.tokensService.refreshTokens(refreshToken)
     }
-
-    @Post('logout/all')
-    @HttpCode(HttpStatus.OK)
-    @UseGuards(JwtAuthGuard, AdminGuard)
-    async logoutAll() {
-        await this.tokensService.logoutAll()
-        return {
-            success: true
-        }
-    }
 }
