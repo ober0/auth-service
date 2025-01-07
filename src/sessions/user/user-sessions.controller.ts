@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, Request, UseGuards } from '@nestjs/common'
-import { JwtAuthGuard } from '../../tokens/guards/jsw.guard'
+import { JwtAuthGuard } from '../../tokens/guards/jwt.guard'
 import { AdminSessionsService } from '../admin/admin-sessions.service'
 import { UserSessionsService } from './user-sessions.service'
 import { ModeratorGuard } from '../../user/guards/moderator.guard'
