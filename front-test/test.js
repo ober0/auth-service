@@ -5,7 +5,7 @@ async function loginAndConnectSocket() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            email: 'onishruslan@yandex.ru',
+            email: prompt('Enter email'),
             password: 'test123321'
         })
     })
@@ -20,11 +20,15 @@ async function loginAndConnectSocket() {
         }
     })
 
-    socket.on('message', (data) => {
-        console.log('Получено сообщение:', data)
+    socket.on('answer', (data) => {
+        console.log('Ответ:', data)
     })
 
-    socket.emit('message', { message: 'Привет, сервер!' })
+    socket.on('message', (data) => {
+        console.log(data)
+    })
+
+    socket.emit('message', { message: 'Привет', id: 24 })
 }
 
 loginAndConnectSocket()

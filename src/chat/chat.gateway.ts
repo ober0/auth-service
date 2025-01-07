@@ -1,8 +1,7 @@
-import { WebSocketGateway, SubscribeMessage, MessageBody, ConnectedSocket, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets'
-import { Socket } from 'socket.io'
+import { WebSocketGateway, SubscribeMessage, MessageBody, ConnectedSocket, OnGatewayConnection, OnGatewayDisconnect, WebSocketServer } from '@nestjs/websockets'
+import { Socket, Server } from 'socket.io'
 import { errors } from '../../config/errors'
 import { JwtService } from '@nestjs/jwt'
-import { UnauthorizedException } from '@nestjs/common'
 import { RedisService } from '../redis/redis.service'
 
 @WebSocketGateway({
@@ -13,6 +12,9 @@ import { RedisService } from '../redis/redis.service'
     }
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+    @WebSocketServer()
+    server: Server
+
     constructor(
         private readonly jwtService: JwtService,
         private readonly redis: RedisService
@@ -22,8 +24,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const token = client.handshake.headers.authorization?.split(' ')[1]
 
         if (!token) {
-            client.emit('message', errors.auth.not_authenticated)
+            client.emit('answer', errors.auth.not_authenticated)
             client.disconnect()
+            return
         }
 
         try {
@@ -33,27 +36,36 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
             client.data.user = payload
             const user_id = payload.id
-            await this.redis.set(`user-${client.id}-ws`, user_id)
-
-            console.log(`Авторизован пользователь: ${user_id}`)
+            await this.redis.set(`user-${user_id}-ws`, client.id)
         } catch (e) {
-            console.log(e)
-            client.emit('message', errors.auth.not_authenticated)
+            client.emit('answer', errors.auth.not_authenticated)
             client.disconnect()
         }
     }
 
-    // Вызывается при отключении клиента
     async handleDisconnect(client: Socket) {
-        await this.redis.delete(`user-${client.id}-ws`)
-        console.log(`Клиент отключен: ${client.id}`)
+        const userId = client.data.user?.id
+        if (userId) {
+            await this.redis.delete(`user-${userId}-ws`)
+        }
     }
 
-    // Обработчик сообщения от клиента
     @SubscribeMessage('message')
-    async handleMessage(@MessageBody() data: { message: string }, @ConnectedSocket() client: Socket) {
-        const client_id = await this.redis.get(`user-${client.id}-ws`)
+    async handleMessage(@MessageBody() data: { message: string; id: number }, @ConnectedSocket() client: Socket) {
+        try {
+            const selfId = client.data.user.id
 
-        client.emit('message', { message: `Сообщение от клиента ${client_id} получено` })
+            // Получение ID сокета целевого клиента
+            const clientId = await this.redis.get(`user-${data.id}-ws`)
+            if (!clientId) {
+                client.emit('answer', { error: 'Пользователь не найден' })
+                return
+            }
+
+            // Отправка сообщения целевому клиенту
+            this.server.to(clientId.toString()).emit('answer', { message: data.message, from: selfId })
+        } catch (error) {
+            client.emit('answer', { error: 'Внутренняя ошибка сервера' })
+        }
     }
 }
