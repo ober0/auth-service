@@ -8,9 +8,10 @@ import { PasswordModule } from '../password/password.module'
 import { TokensModule } from '../tokens/tokens.module'
 import { AdminModule } from '../admin/admin.module'
 import { SessionsModule } from '../sessions/sessions.module'
+import { ChatModule } from '../chat/chat.module'
 
 @Module({
-    imports: [AuthModule, PrismaModule, UserModule, PasswordModule, TokensModule, AdminModule, SessionsModule],
+    imports: [AuthModule, PrismaModule, UserModule, PasswordModule, TokensModule, AdminModule, SessionsModule, ChatModule],
     controllers: [AppController],
     providers: [AppService]
 })

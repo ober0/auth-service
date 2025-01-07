@@ -3,7 +3,7 @@ import { AuthService } from './auth.service'
 import { LoginData } from './dto/auth.dto'
 import { TokensService } from '../tokens/tokens.service'
 import { AdminGuard } from '../user/guards/admin.guard'
-import { JwtAuthGuard } from '../tokens/guards/jsw.guard'
+import { JwtAuthGuard } from '../tokens/guards/jwt.guard'
 
 @Controller('auth')
 export class AuthController {

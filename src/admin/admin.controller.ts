@@ -1,5 +1,5 @@
 import { Body, Controller, Patch, Post, UseGuards } from '@nestjs/common'
-import { JwtAuthGuard } from '../tokens/guards/jsw.guard'
+import { JwtAuthGuard } from '../tokens/guards/jwt.guard'
 import { AdminService } from './admin.service'
 import { AdminGuard } from '../user/guards/admin.guard'
 import { ConfirmGuard } from '../user/guards/confirm.guard'
