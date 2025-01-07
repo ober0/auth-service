@@ -1,99 +1,274 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Сервис авторизации
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Данный сервис предоставляет готовый функционал для управления пользователями, сессиями и ролями. Это универсальное решение, которое можно взять за основу для создания полноценной системы авторизации и аутентификации в любом проекте.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Запуск
 
-## Description
+### 1. Настройка окружения
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Перед запуском проекта необходимо создать файл `.env` и добавить в него следующие параметры:
 
-## Project setup
-
-```bash
-$ npm install
+```env
+DATABASE_URL=""                 # URL подключения к базе данных
+PORT=                           # Порт, на котором будет работать сервис
+JWT_SECRET=""                   # Секретный ключ для работы JWT
+SMTP_SERVICE_NAME="yandex"      # Имя SMTP сервиса
+SMTP_USER=""                    # Логин для SMTP сервера
+SMTP_PASSWORD=''                # Пароль для SMTP сервера
+REDIS_HOST=""                   # Хост Redis
+REDIS_PORT=                      # Порт Redis
 ```
 
-## Compile and run the project
+### 2. Создать БД и выполнить миграции:
+
+```shell
+npx prisma migrate deploy
+```
+
+### 3. Выполнить генерацию Prisma:
+
+```shell
+npx prisma generate
+```
+
+### 4. Выполнить сиды для бд:
+
+```shell
+npm run seed
+```
+
+### 5. Запустить postgres и redis
+
+### 6. Запустить сервер:
 
 ```bash
-# development
 $ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ npm run test
+## Возможности:
 
-# e2e tests
-$ npm run test:e2e
+- Управление пользователями (CRUD).
+- Работа с ролями (пользователь, модератор, администратор).
+- Авторизация через `access` и `refresh` токены.
+- Управление сессиями пользователей (завершение всех сессий, завершение конкретной сессии).
+- Защита с помощью JWT и Guard.
+- Система подтверждения учетной записи через Email.
 
-# test coverage
-$ npm run test:cov
-```
+---
 
-## Deployment
+## Маршруты
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### 1. **Администрирование**
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+#### **Назначение модератора**
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
+- **Метод**: `PATCH`
+- **URL**: `/api/admin/make/moderator`
+- **Защита**: `JwtAuthGuard`, `AdminGuard`
+- **Описание**: Назначает указанного пользователя модератором.
+- **Тело запроса**:
+    ```json
+    {
+      "id": number
+    }
+    ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+#### **Удаление модератора**
 
-## Resources
+- **Метод**: `PATCH`
+- **URL**: `/api/admin/delete/moderator`
+- **Защита**: `JwtAuthGuard`, `AdminGuard`
+- **Описание**: Удаляет статус модератора у указанного пользователя.
+- **Тело запроса**:
+    ```json
+    {
+      "id": number
+    }
+    ```
 
-Check out a few resources that may come in handy when working with NestJS:
+#### **Назначение администратора**
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- **Метод**: `PATCH`
+- **URL**: `/api/admin/make/admin`
+- **Защита**: `JwtAuthGuard`, `AdminGuard`, `ConfirmGuard`
+- **Описание**: Назначает указанного пользователя администратором.
+- **Тело запроса**:
+    ```json
+    {
+      "id": number
+    }
+    ```
 
-## Support
+#### **Удаление администратора**
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- **Метод**: `PATCH`
+- **URL**: `/api/admin/delete/admin`
+- **Защита**: `JwtAuthGuard`, `AdminGuard`
+- **Описание**: Удаляет статус администратора у указанного пользователя.
+- **Тело запроса**:
+    ```json
+    {
+      "id": number
+    }
+    ```
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### 2. **Авторизация**
 
-## License
+#### **Вход**
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- **Метод**: `POST`
+- **URL**: `/api/auth`
+- **Описание**: Авторизует пользователя и возвращает токены.
+- **Тело запроса**:
+    ```json
+    {
+        "email": "string",
+        "password": "string"
+    }
+    ```
+
+#### **Обновление токенов**
+
+- **Метод**: `POST`
+- **URL**: `/api/auth/refresh`
+- **Описание**: Обновляет `access` и `refresh` токены.
+- **Тело запроса**:
+    ```json
+    {
+        "refresh_token": "string"
+    }
+    ```
+
+---
+
+### 3. **Управление сессиями для администраторов**
+
+#### **Завершение всех сессий**
+
+- **Метод**: `POST`
+- **URL**: `/api/sessions/admin/logout/all`
+- **Защита**: `JwtAuthGuard`, `AdminGuard`
+- **Описание**: Завершает все активные сессии в системе.
+
+#### **Получение сессий пользователя**
+
+- **Метод**: `GET`
+- **URL**: `/api/sessions/admin/:id`
+- **Защита**: `JwtAuthGuard`, `ModeratorGuard`
+- **Описание**: Возвращает список всех активных сессий указанного пользователя.
+
+#### **Завершение всех сессий пользователя**
+
+- **Метод**: `POST`
+- **URL**: `/api/sessions/admin/logout/user/:id`
+- **Защита**: `JwtAuthGuard`, `ModeratorGuard`
+- **Описание**: Завершает все активные сессии указанного пользователя.
+
+#### **Завершение конкретной сессии пользователя**
+
+- **Метод**: `POST`
+- **URL**: `/api/sessions/admin/logout/session/`
+- **Защита**: `JwtAuthGuard`, `ModeratorGuard`
+- **Описание**: Завершает указанную сессию пользователя.
+- **Тело запроса**:
+    ```json
+    {
+        "user_id": "string",
+        "session_id": "string"
+    }
+    ```
+
+---
+
+### 4. **Управление сессиями для пользователя**
+
+#### **Получение своих сессий**
+
+- **Метод**: `GET`
+- **URL**: `/api/sessions/user`
+- **Защита**: `JwtAuthGuard`
+- **Описание**: Возвращает список активных сессий текущего пользователя.
+
+#### **Завершение всех своих сессий**
+
+- **Метод**: `POST`
+- **URL**: `/api/sessions/user/logout/`
+- **Защита**: `JwtAuthGuard`
+- **Описание**: Завершает все активные сессии текущего пользователя.
+
+#### **Завершение одной из своих сессий**
+
+- **Метод**: `POST`
+- **URL**: `/api/sessions/user/logout/session/`
+- **Защита**: `JwtAuthGuard`
+- **Описание**: Завершает указанную сессию текущего пользователя.
+- **Тело запроса**:
+    ```json
+    {
+        "session_id": "string"
+    }
+    ```
+
+---
+
+### 5. **Управление пользователями**
+
+#### **Добавление нового пользователя**
+
+- **Метод**: `POST`
+- **URL**: `/api/user/add`
+- **Описание**: Регистрирует нового пользователя.
+- **Тело запроса**:
+    ```json
+    {
+        "email": "string",
+        "password": "string",
+        "name": "string"
+    }
+    ```
+
+#### **Получение пользователя по ID**
+
+- **Метод**: `GET`
+- **URL**: `/api/user/:id`
+- **Описание**: Возвращает данные указанного пользователя.
+
+#### **Удаление пользователя**
+
+- **Метод**: `DELETE`
+- **URL**: `/api/user/:id`
+- **Защита**: `JwtAuthGuard`, `ModeratorOrSelfGuard`
+- **Описание**: Удаляет пользователя с указанным ID.
+
+#### **Получение всех пользователей**
+
+- **Метод**: `GET`
+- **URL**: `/api/user`
+- **Описание**: Возвращает список всех зарегистрированных пользователей.
+
+#### **Подтверждение аккаунта (отправка кода)**
+
+- **Метод**: `POST`
+- **URL**: `/api/user/confirm`
+- **Защита**: `JwtAuthGuard`
+- **Описание**: Отправляет код подтверждения на Email текущего пользователя.
+
+#### **Подтверждение аккаунта (проверка кода)**
+
+- **Метод**: `PATCH`
+- **URL**: `/api/user/confirm`
+- **Защита**: `JwtAuthGuard`
+- **Описание**: Проверяет введенный код подтверждения и возвращает hash
+- **Тело запроса**:
+    ```json
+    {
+        "hash": "string",
+        "code": "number"
+    }
+    ```
+
+---
