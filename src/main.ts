@@ -11,7 +11,7 @@ async function bootstrap() {
     })
 
     const config = new DocumentBuilder()
-        .setTitle('My API')
+        .setTitle('My API 1.0')
         .setDescription('The API description')
         .setVersion('1.0')
         .addTag('auth') // Добавь нужные теги для твоего API
