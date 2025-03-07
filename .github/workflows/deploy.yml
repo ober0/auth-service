@@ -15,7 +15,7 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_KEY }}
+          password: ${{ secrets.VPS_PASSWORD }}
           script: |
             # Экспортируем переменные окружения
             export DATABASE_URL=${{ secrets.DATABASE_URL }}
@@ -31,7 +31,7 @@ jobs:
             cd /var/www/auth_service
 
             # Обновляем репозиторий и устанавливаем зависимости
-            git pull origin main
+            git pull origin master
             npm install
             npm run build
 
