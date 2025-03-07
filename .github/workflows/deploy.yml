@@ -31,7 +31,7 @@ jobs:
             cd /var/www/auth_service
 
             # Обновляем репозиторий и устанавливаем зависимости
-            git pull origin main
+            git pull origin master
             npm install
             npm run build
 
